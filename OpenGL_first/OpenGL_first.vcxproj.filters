@@ -36,5 +36,10 @@
   <ItemGroup>
     <None Include="Shaders\fragment.frag" />
     <None Include="Shaders\vertex.vert" />
+    <None Include="packages.config" />
+    <None Include="Shaders\lighting_colors.vert" />
+    <None Include="Shaders\lighting_colors.frag" />
+    <None Include="Shaders\light_cube.frag" />
+    <None Include="Shaders\light_cube.vert" />
   </ItemGroup>
 </Project>
