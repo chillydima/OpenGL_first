@@ -45,7 +45,7 @@ float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 // light
-glm::vec3 lightPos(5.25, 5.0f, 5.0f);
+glm::vec3 lightPos(5.25f, 5.0f, 5.0f);
 
 
 int main() 
@@ -97,7 +97,7 @@ int main()
 	Shader lightingShader("Shaders/lighting_colors.vert", "Shaders/lighting_colors.frag");
 	Shader lightCubeShader("Shaders/light_cube.vert", "Shaders/light_cube.frag");
 
-
+	
 
 	
 
@@ -366,14 +366,17 @@ int main()
 
 		// rendering commands here
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		
 
 
-
+		/*lightPos = glm::vec3(5.25f+6*cos(glfwGetTime()), 5.0f, 5.0f+6*sin(glfwGetTime()));*/
+		lightPos.x = 5.25f + sin(glfwGetTime()) * 3.0f;
+		lightPos.y = 2.0f + sin(glfwGetTime() / 2.0f) * 5.0f;
 
 		// 5. Drawing code (in render loop)
 		// use shader program to render an object
@@ -389,9 +392,34 @@ int main()
 		// activate shader
 		/*ourShader.use();*/
 		lightingShader.use();
-		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		/*lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);*/
 		lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		lightingShader.setVec3("lightPos", lightPos);
+		lightingShader.setVec3("viewPos", camera.Position);
+
+		lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		lightingShader.setFloat("material.shininess", 32.0f);
+
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime() * 2.0f);
+		lightColor.y = sin(glfwGetTime() * 0.7f);
+		lightColor.z = sin(glfwGetTime() * 1.3f);
+
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(1.0f);
+
+
+		lightingShader.setVec3("light.ambient", ambientColor);
+		lightingShader.setVec3("light.diffuse", diffuseColor);
+		/*lightingShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+		lightingShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);*/
+		lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+
+
+
 
 
 		// pass projection matrix to shader (note that in this case it could change every frame)
@@ -541,6 +569,24 @@ void processInput(GLFWwindow* window)
 		camera.ProcessKeyBoard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyBoard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		lightPos.y += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		lightPos.y -= 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+		lightPos.x += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		lightPos.x -= 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.MovementSpeed += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	{
+		camera.MovementSpeed -= 0.1f;
+		if (camera.MovementSpeed <= 0.0f)
+			camera.MovementSpeed = 0.1;
+	}
+	
+
 
 }
 
