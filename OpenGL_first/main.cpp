@@ -390,19 +390,29 @@ int main()
 		//glBindTexture(GL_TEXTURE_2D, texture2);
 
 		// activate shader
-		/*ourShader.use();*/
 		lightingShader.use();
+
 		/*lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);*/
-		lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		lightingShader.setVec3("lightPos", lightPos);
 		lightingShader.setVec3("viewPos", camera.Position);
 
-		lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-		lightingShader.setFloat("material.shininess", 32.0f);
 
-		glm::vec3 lightColor;
+		// material properties
+		lightingShader.setVec3("material.ambient", 0.0215f,0.1745f,0.0215f);
+		lightingShader.setVec3("material.diffuse", 0.07568f,0.61424f,0.07568f);
+		lightingShader.setVec3("material.specular", 0.633f,0.727811f,0.633f);
+		lightingShader.setFloat("material.shininess", 0.6f*128.0f);
+
+		// light properties
+		lightingShader.setVec3("light.ambient", 0.24725f,0.1995f,0.0745f);
+		lightingShader.setVec3("light.diffuse", 0.75164f,0.60648f,0.22648f);
+		lightingShader.setVec3("light.specular", 0.628281f,0.555802f,0.366065f);
+
+
+
+		// -----------------------------------------------------------------------------
+
+		/*glm::vec3 lightColor;
 		lightColor.x = sin(glfwGetTime() * 2.0f);
 		lightColor.y = sin(glfwGetTime() * 0.7f);
 		lightColor.z = sin(glfwGetTime() * 1.3f);
@@ -413,10 +423,9 @@ int main()
 
 		lightingShader.setVec3("light.ambient", ambientColor);
 		lightingShader.setVec3("light.diffuse", diffuseColor);
-		/*lightingShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
-		lightingShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);*/
-		lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);*/
 
+		// -----------------------------------------------------------------------------
 
 
 
@@ -429,57 +438,6 @@ int main()
 		// camera/view transformation
 		glm::mat4 view = camera.GetViewMatrix();
 		lightingShader.setMat4("view", view);
-
-		/*glm::mat4 model = glm::mat4(1.0f);
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));*/
-
-		// camera and view transformation
-
-
-		//glm::mat4 view = glm::mat4(1.0f);
-		////// note that we're translating the scene in the reverse direction of where we want to move
-		//
-
-
-
-		//const float radius = 8.0f;
-		//float camX = sin(glfwGetTime()) * radius;
-		//float camZ = cos(glfwGetTime()) * radius;
-
-		//
-
-		//
-
-
-		//
-
-		//view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-
-
-
-
-
-
-		//
-
-		//int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model)); // 1 way
-
-		//int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]); // 2 way
-
-		//int projectionLoc = glGetUniformLocation(ourShader.ID, "projection"); // we can set projection matrix outside render loop, because matrix rarely changes
-		//glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		
-
-		/*ourShader.setFloat("mixValue", mixValue);*/
-
-		
-		
-		
-		/*glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
 
 
 		for (unsigned int i = 0; i < (sizeof(cubePositions)/sizeof(*cubePositions)); i++)
