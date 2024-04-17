@@ -154,16 +154,7 @@ int main()
 	};
 
 	glm::vec3 cubePositions[] = {
-			/*glm::vec3(0.0f,  0.0f,  0.0f),
-			glm::vec3(2.0f,  5.0f, -15.0f),
-			glm::vec3(-1.5f, -2.2f, -2.5f),
-			glm::vec3(-3.8f, -2.0f, -12.3f),
-			glm::vec3(2.4f, -0.4f, -3.5f),
-			glm::vec3(-1.7f,  3.0f, -7.5f),
-			glm::vec3(1.3f, -2.0f, -2.5f),
-			glm::vec3(1.5f,  2.0f, -2.5f),
-			glm::vec3(1.5f,  0.2f, -1.5f),
-			glm::vec3(-1.3f,  1.0f, -1.5f),*/
+
 
 
 
@@ -205,50 +196,6 @@ int main()
 			
 	};
 
-
-	//unsigned int VAO[1], VBO[1];
-
-	//glGenVertexArrays(1, VAO);
-	//glGenBuffers(1, VBO);
-	//// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	//glBindVertexArray(VAO[0]);
-
-	//unsigned int lightVAO;
-	//glGenVertexArrays(1, &lightVAO);
-	//glBindVertexArray(lightVAO);
-
-
-
-	//// 2. copy our vertices array in a buffer for OpenGL to use
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-
-	//// 4. set the vertex attributes pointers
-	//// position attribute
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(0);
-
-	//// color attribute
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
-
-	//// texture coordinates attribute
-	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(2);
-
-	//// light source attribute
-	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(3);
-
-	//// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	//// remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-	////glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	//// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	//// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 
 
 	// first, configure the cube's VAO (and VBO)
@@ -381,7 +328,9 @@ int main()
 		// 5. Drawing code (in render loop)
 		// use shader program to render an object
 
-
+		glm::vec3 lamp_ambient(0.24725f, 0.1995f, 0.0745f);
+		glm::vec3 lamp_diffuse(0.75164f, 0.60648f, 0.22648f);
+		glm::vec3 lamp_specular(0.628281f, 0.555802f, 0.366065f);
 
 
 		//glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
@@ -393,7 +342,7 @@ int main()
 		lightingShader.use();
 
 		/*lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);*/
-		lightingShader.setVec3("lightPos", lightPos);
+		lightingShader.setVec3("light.position", lightPos);
 		lightingShader.setVec3("viewPos", camera.Position);
 
 
@@ -404,10 +353,11 @@ int main()
 		lightingShader.setFloat("material.shininess", 0.6f*128.0f);
 
 		// light properties
-		lightingShader.setVec3("light.ambient", 0.24725f,0.1995f,0.0745f);
-		lightingShader.setVec3("light.diffuse", 0.75164f,0.60648f,0.22648f);
-		lightingShader.setVec3("light.specular", 0.628281f,0.555802f,0.366065f);
+		lightingShader.setVec3("light.ambient", lamp_ambient);
+		lightingShader.setVec3("light.diffuse", lamp_diffuse);
+		lightingShader.setVec3("light.specular", lamp_specular);
 
+		
 
 
 		// -----------------------------------------------------------------------------
@@ -446,10 +396,6 @@ int main()
 			/*model = glm::scale(model, glm::vec3(1.0f, 2.0f, 4.0f));*/
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 0.0f;
-			/*if (i % 3 == 0)
-			{
-				angle = glfwGetTime() * 25.0f;
-			}*/
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			lightingShader.setMat4("model", model);
 
@@ -461,6 +407,9 @@ int main()
 		lightCubeShader.use();
 		lightCubeShader.setMat4("projection", projection);
 		lightCubeShader.setMat4("view", view);
+		lightCubeShader.setVec3("light.ambient", lamp_ambient);
+		lightCubeShader.setVec3("light.diffuse", lamp_diffuse);
+		lightCubeShader.setVec3("light.specular", lamp_specular);
 		glm::mat4 model = glm::mat4(1.0f);
 
 		model = glm::translate(model, lightPos);
@@ -482,9 +431,6 @@ int main()
 
 	//// optional: de-allocate all resources once they've outlived their purpose:
 	//// ------------------------------------------------------------------------
-	/*glDeleteVertexArrays(2, VAO);
-	glDeleteBuffers(2, VBO);*/
-	/*glDeleteBuffers(1, &EBO);*/
 
 	glDeleteVertexArrays(1, &cubeVAO);
 	glDeleteVertexArrays(1, &lightCubeVAO);
