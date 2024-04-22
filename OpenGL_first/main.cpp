@@ -234,11 +234,15 @@ int main()
 	// load textures 
 	// -------------
 	unsigned int diffuseMap = loadTexture("Textures/container2.png");
+	unsigned int specularMap = loadTexture("Textures/container2_specular.png");
+	unsigned int emissionMap = loadTexture("Textures/matrix.jpg");
 
 	// shader configuration
 	// --------------------
 	lightingShader.use();
 	lightingShader.setInt("material.diffuse", 0);
+	lightingShader.setInt("material.specular", 1);
+	lightingShader.setInt("material.emission", 2);
 
 	
 
@@ -316,6 +320,10 @@ int main()
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, emissionMap);
 
 
 		for (unsigned int i = 0; i < (sizeof(cubePositions)/sizeof(*cubePositions)); i++)
