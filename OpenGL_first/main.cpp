@@ -47,6 +47,7 @@ float lastFrame = 0.0f; // Time of last frame
 
 // light
 glm::vec3 lightPos(5.25f, 5.0f, 5.0f);
+glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
 
 
 int main() 
@@ -158,10 +159,19 @@ int main()
 	glm::vec3 cubePositions[] = {
 
 
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
 
 
-
-			glm::vec3(0.0f, 0.0f, 0.0f),
+			/*glm::vec3(0.0f, 0.0f, 0.0f),
 			glm::vec3(0.0f, 0.0f, 1.5f),
 			glm::vec3(0.0f, 0.0f, 3.0f),
 			glm::vec3(0.0f, 0.0f, 4.5f),
@@ -194,7 +204,7 @@ int main()
 			glm::vec3(4.5f, 0.0f, 9.0f),
 			glm::vec3(6.0f, 0.0f, 9.0f),
 			glm::vec3(7.5f, 0.0f, 9.0f),
-			glm::vec3(9.0f, 0.0f, 9.0f),
+			glm::vec3(9.0f, 0.0f, 9.0f),*/
 			
 	};
 
@@ -242,7 +252,7 @@ int main()
 	lightingShader.use();
 	lightingShader.setInt("material.diffuse", 0);
 	lightingShader.setInt("material.specular", 1);
-	lightingShader.setInt("material.emission", 2);
+	//lightingShader.setInt("material.emission", 2);
 
 	
 
@@ -273,8 +283,8 @@ int main()
 
 
 		/*lightPos = glm::vec3(5.25f+6*cos(glfwGetTime()), 5.0f, 5.0f+6*sin(glfwGetTime()));*/
-		lightPos.x = 5.25f + sin(glfwGetTime()) * 3.0f;
-		lightPos.y = 2.0f + sin(glfwGetTime() / 2.0f) * 5.0f;
+		/*lightPos.x = 5.25f + sin(glfwGetTime()) * 3.0f;
+		lightPos.y = 2.0f + sin(glfwGetTime() / 2.0f) * 5.0f*/;
 
 		// 5. Drawing code (in render loop)
 		// use shader program to render an object
@@ -296,6 +306,7 @@ int main()
 		lightingShader.use();
 
 		/*lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);*/
+		//lightingShader.setVec3("light.direction", lightDirection);
 		lightingShader.setVec3("light.position", lightPos);
 		lightingShader.setVec3("viewPos", camera.Position);
 
@@ -307,6 +318,12 @@ int main()
 		// material properties
 		lightingShader.setVec3("material.specular", 0.633f, 0.727811f, 0.633f);
 		lightingShader.setFloat("material.shininess", 0.6f * 128.0f);
+
+		// attenuation properties (light will cover a distance of 50)
+		lightingShader.setFloat("light.constant",  1.0f);
+		lightingShader.setFloat("light.linear",    0.09f);
+		lightingShader.setFloat("light.quadratic", 0.032f);
+
 
 
 		// pass projection matrix to shader (note that in this case it could change every frame)
@@ -322,10 +339,10 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, specularMap);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, emissionMap);
+		/*glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, emissionMap);*/
 
-
+		glBindVertexArray(cubeVAO);
 		for (unsigned int i = 0; i < (sizeof(cubePositions)/sizeof(*cubePositions)); i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
@@ -335,7 +352,7 @@ int main()
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			lightingShader.setMat4("model", model);
 
-			glBindVertexArray(cubeVAO);
+			
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
@@ -417,6 +434,11 @@ void processInput(GLFWwindow* window)
 		lightPos.x += 0.1f;
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
 		lightPos.x -= 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+		lightPos.z += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		lightPos.z -= 0.1f;
+
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		camera.MovementSpeed += 0.1f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
